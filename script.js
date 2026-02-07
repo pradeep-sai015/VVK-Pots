@@ -493,6 +493,85 @@ function updateAddressSummaries() {
         }
     }
 }
+// 21. FILTER CATEGORY: Home page and Menu bar nundi categories filter chesthundhi
+function filterCategory(c) {
+    // 1. Home page ki switch chesthunnam ra
+    showPage('home'); 
+
+    // 2. UI Tags highlight logic (Rounded tags kosam)
+    document.querySelectorAll('.tag').forEach(t => {
+        if(t.innerText.includes(c)) t.classList.add('active');
+        else t.classList.remove('active');
+    });
+
+    // 3. Database nundi vachina pots ni filter chesthunnam
+    const filtered = (c === 'All') ? pots : pots.filter(p => p.category === c);
+    
+    // 4. Grid refresh chesthunnam
+    displayProducts(filtered);
+}
+
+// 22. IMAGE SLIDER LOGIC: Product detail page lo images scroll avvadaniki
+function setupSlider() {
+    const slider = document.getElementById('image-slider');
+    if (!slider) return;
+    
+    // Slider rounded corners and smooth scrolling
+    slider.style.display = 'flex';
+    slider.style.overflowX = 'auto';
+    slider.style.scrollSnapType = 'x mandatory';
+    slider.style.borderRadius = '20px';
+}
+
+// 23. ADMIN LOGIN REDIRECT FIX: Admin panel open kakapothe idi kachithanga undali
+function adminLoginRedirect() {
+    const adminPage = document.getElementById('admin-page');
+    if (adminPage) {
+        showPage('admin');
+        adminSearchProducts(); // Inventory refresh chesthundhi
+    } else {
+        console.error("Admin Page section dhorakadam ledu ra!");
+    }
+}
+
+// 24. SAVE PRODUCT SYNC: Data save ayyaka devices anni refresh avvadaniki
+function syncProductToAllDevices(id, productData) {
+    database.ref('pots/' + id).set(productData)
+        .then(() => {
+            alert("Success: Saved & Synced to all devices!");
+            // Admin panel lone unchi details clear chesthunnam ra
+            document.getElementById('edit-pot-id').value = "";
+            document.getElementById('new-pot-name').value = "";
+            document.getElementById('new-pot-price').value = "";
+            document.getElementById('new-pot-category').value = "";
+            document.getElementById('new-pot-img').value = "";
+            adminSearchProducts();
+        })
+        .catch(err => alert("Sync Error: " + err.message));
+}
+
+// 25. PLACE ORDER (WHATSAPP FIX): Checkout nundi WhatsApp ki neat message pampisthundhi
+function placeOrder() {
+    const addr = document.getElementById('ship-address').value;
+    if(!addr.trim()) return alert("Address kachithanga kottu ra!");
+
+    document.getElementById('whatsapp-modal').style.display = 'flex';
+
+    let orderItems = cart.map(i => `• ${i.name} (Qty: ${i.quantity}) - ₹${i.price * i.quantity}`).join('%0A');
+    let totalBill = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    
+    let message = `*NEW ORDER - V K K POTS*%0A%0A` +
+                  `*Items:*%0A${orderItems}%0A%0A` +
+                  `*Total:* ₹${totalBill}%0A%0A` +
+                  `*Address:*%0A${addr.trim()}%0A%0A` +
+                  `_Please confirm order!_`;
+
+    setTimeout(() => {
+        window.location.href = `https://wa.me/916301678881?text=${message}`;
+        cart = [];
+        saveToStorage();
+    }, 1500);
+}
 
 function toggleWishlist(id) {
     const idx = wishlist.findIndex(w => w.id === id);
