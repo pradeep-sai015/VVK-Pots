@@ -36,7 +36,7 @@ function showPage(pageId) {
         // Page start nundi kanipinchela top ki scroll chesthunna ra
         window.scrollTo(0, 0); 
     } else {
-        console.error("Arey, ee page ID dorakaledu ra: " + pageId + "-page");
+        console.error("Page not found !: " + pageId + "-page");
     }
     
     // 3. Page-specific logic refresh
@@ -334,20 +334,20 @@ function saveAddress() {
     const city = document.getElementById('addr-city').value.trim();
     const pin = document.getElementById('addr-pin').value.trim();
     
-    if(!house || !city || !pin) return alert("House No, City and Pin kachithanga kottu ra!");
+    if(!house || !city || !pin) return alert("Compulsory fill details House No, City and Pin !");
 
     // Object structure update chesa
     addresses[t] = { house, village, city, pin };
     
     saveToStorage();
-    alert("Address Saved Successfully ra!");
+    alert("Address Saved Successfully !");
     showPage('account');
 }
 
 function updateCheckoutUI() { let sub = cart.reduce((s, i) => s + (i.price * i.quantity), 0); const summary = document.getElementById('checkout-bill-summary'); summary.innerHTML = `<div class="account-box"><h4>Bill Summary</h4><div style="display:flex; justify-content:space-between;"><span>Items:</span><span>₹${sub}</span></div><div style="display:flex; justify-content:space-between;"><span>Delivery:</span><span style="color:green;">FREE</span></div><hr><div style="display:flex; justify-content:space-between; font-weight:bold;"><span>Payable:</span><span>₹${sub}</span></div></div>`; }
 function placeOrder() {
     const addr = document.getElementById('ship-address').value;
-    if(!addr.trim()) return alert("Address kottu ra!");
+    if(!addr.trim()) return alert("PLEASE WRITE ADDRESS !");
 
     // 1. WhatsApp Redirect Modal chupinchu ra
     document.getElementById('whatsapp-modal').style.display = 'flex';
