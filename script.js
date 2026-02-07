@@ -423,6 +423,76 @@ function updateCheckoutUI() {
             </div>
         </div>`;
 }
+// 16. PARSE JWT: Google Login nundi vache secure token ni decode chesthundhi
+function parseJwt(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+}
+
+// 17. PERFORM SEARCH: Search bar lo type chese text batti products ni filter chesthundhi
+function performSearch() {
+    const q = document.getElementById('main-search-input').value.toLowerCase().trim();
+    // Search page lo filter ayina results matrame rounded design tho kanipisthayi
+    const results = pots.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        p.category.toLowerCase().includes(q)
+    );
+    displayProducts(results, 'search-results-list', 50);
+}
+
+// 18. HANDLE CREDENTIAL RESPONSE: Google login success ayyaka user profile ni set chesthundhi
+function handleCredentialResponse(response) {
+    try {
+        const user = parseJwt(response.credential);
+        isLoggedIn = true;
+        localStorage.setItem('currentUser', user.name);
+        localStorage.setItem('isLoggedIn', 'true');
+        saveToStorage();
+        updateAuthUI();
+        showPage('home'); // Login success ayyaka home ki vellali
+        alert("Google Login Success! Welcome " + user.name);
+    } catch (err) {
+        console.error("Google Login Error:", err);
+    }
+}
+
+// 19. UPDATE SHIP ADDRESS AREA: Dropdown lo address select chesthe textarea fill chesthundhi
+function updateShipAddressArea() {
+    const val = document.getElementById('select-address-dropdown').value;
+    const addrArea = document.getElementById('ship-address');
+    
+    if (val && addresses[val]) {
+        const a = addresses[val];
+        // Empty fields unte neat ga filter chesthunnam ra
+        const fullAddr = [a.house, a.village, a.city, a.pin]
+            .filter(v => v && v.trim() !== "")
+            .join(", ");
+        addrArea.value = fullAddr;
+    } else {
+        addrArea.value = "";
+    }
+}
+
+// 20. UPDATE ADDRESS SUMMARIES: Account page lo saved addresses ni refresh chesthundhi
+function updateAddressSummaries() {
+    // Ee logic valla account page lo addresses dynamic ga update avthayi
+    const types = { 1: "Home", 2: "Office" };
+    for (let t in types) {
+        const addrBox = document.getElementById(`summary-addr-${t}`);
+        if (addrBox) {
+            if (addresses[t]) {
+                const a = addresses[t];
+                addrBox.innerText = `${types[t]}: ${a.house}, ${a.city}`;
+            } else {
+                addrBox.innerText = `${types[t]}: Not Saved`;
+            }
+        }
+    }
+}
 
 function toggleWishlist(id) {
     const idx = wishlist.findIndex(w => w.id === id);
