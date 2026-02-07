@@ -1,3 +1,35 @@
+// --- FIREBASE CONFIGURATION ---
+const firebaseConfig = {
+  apiKey: "AIzaSyBLukl9cIxfzOUuing87QgbImaMK7US7lk",
+  authDomain: "vvk-pots.firebaseapp.com",
+  databaseURL: "https://vvk-pots-default-rtdb.firebaseio.com",
+  projectId: "vvk-pots",
+  storageBucket: "vvk-pots.firebasestorage.app",
+  messagingSenderId: "475009142869",
+  appId: "1:475009142869:web:6ffff48dae98b2fe5f44dc",
+  measurementId: "G-31RKTKRTV7"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// --- DATABASE LOADING LOGIC ---
+function loadPotsFromDB() {
+    database.ref('pots').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Database nundi data ni array ga marchi 'pots' variable loki load chesthunnam
+            pots = Object.values(data);
+            displayProducts(pots);
+        } else {
+            // Database empty ga unte default pots chupisthundhi
+            pots = defaultPots;
+            displayProducts(pots);
+        }
+    });
+}
+
 const defaultPots = [
     { id: 1, name: "Traditional Clay Pot", price: 499, category: "Clay", img: "https://i.postimg.cc/XYwPXGRD/Earthen-Clay-Water-Pot-Plain-Red-with-Metal-Tap-11-Liter-1.webp", images: ["https://i.postimg.cc/XYwPXGRD/Earthen-Clay-Water-Pot-Plain-Red-with-Metal-Tap-11-Liter-1.webp"], stock: true },
     { id: 2, name: "Designer Ceramic", price: 850, category: "Ceramic", img: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400", images: ["https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400"], stock: true },{ id: 3, name: "Diya", price: 149, category: "Diya", img: "https://i.postimg.cc/13BDXyzR/Screenshot_2026_02_06_17_32_28_581_com_flipkart_android.png", images: ["https://i.postimg.cc/13BDXyzR/Screenshot_2026_02_06_17_32_28_581_com_flipkart_android.png"], stock: true }
@@ -20,6 +52,7 @@ function saveToStorage() {
     localStorage.setItem('elite_recent', JSON.stringify(recentlyViewed));
     localStorage.setItem('isLoggedIn', isLoggedIn);
     localStorage.setItem('elite_addresses', JSON.stringify(addresses));
+    
 }
 
 // Function to link and show all pages correctly
@@ -123,8 +156,6 @@ function closeFullImage() {
     if(modal) modal.style.display = "none";
 }
 
-
-// ADMIN SAVE FIX: Multi-Image & Form Reset
 function saveProduct() {
     const idIn = document.getElementById('edit-pot-id').value;
     const name = document.getElementById('new-pot-name').value;
@@ -135,30 +166,46 @@ function saveProduct() {
     if(!name || !price || !imgStr) return alert("Details and Image link kachithanga kottu ra!");
 
     const imgArr = imgStr.split(',').map(s => s.trim()).filter(s => s !== "");
+    const newId = idIn ? Number(idIn) : Date.now(); // Patha ID leda kotha ID
 
+    const productData = {
+        id: newId, 
+        name, 
+        price: Number(price), 
+        category: cat, 
+        img: imgArr[0], 
+        images: imgArr, 
+        stock: true
+    };
+
+    // 1. Local array update
     if(idIn) {
         const idx = pots.findIndex(p => p.id == idIn);
-        if(idx > -1) {
-            pots[idx] = {
-                ...pots[idx], 
-                name, 
-                price: Number(price), 
-                category: cat, 
-                img: imgArr[0], 
-                images: imgArr
-            };
-        }
+        if(idx > -1) pots[idx] = productData;
     } else {
-        pots.push({
-            id: Date.now(), 
-            name, 
-            price: Number(price), 
-            category: cat, 
-            img: imgArr[0], 
-            images: imgArr, 
-            stock: true
-        });
+        pots.push(productData);
     }
+
+    // 2. Firebase Database Sync (Deeni valle andariki kanipisthundi)
+    database.ref('pots/' + newId).set(productData)
+        .then(() => {
+            alert("Success: Saved to Global Database!");
+            // Form Reset Logic
+            document.getElementById('edit-pot-id').value = "";
+            document.getElementById('new-pot-name').value = "";
+            document.getElementById('new-pot-price').value = "";
+            document.getElementById('new-pot-category').value = "";
+            document.getElementById('new-pot-img').value = "";
+            
+            adminSearchProducts();
+            displayProducts(pots);
+        })
+        .catch(err => alert("Error: " + err.message));
+
+    saveToStorage(); // Local backup
+}
+
+// ADMIN SAVE FIX: Multi-Image & Form Reset
 
     saveToStorage();
     document.getElementById('edit-pot-id').value = "";
@@ -170,6 +217,32 @@ function saveProduct() {
     adminSearchProducts();
     displayProducts(pots);
     alert("Saved Successfully! Ikkade untavu chudu.");
+    
+    // ... (paina unna patha logic kachithanga undali ra) ...
+
+    const newProduct = {
+        id: newId,
+        name: name,
+        price: Number(price),
+        category: cat,
+        img: imgArr[0],
+        images: imgArr,
+        stock: true
+    };
+
+    // 1. Local storage lo save chesthunnam
+    saveToStorage(); 
+
+    // 2. Database loki pampalsina line IKKADA undali
+    database.ref('pots/' + newId).set(newProduct)
+        .then(() => alert("Saved to Database!"))
+        .catch(err => console.error(err));
+
+    // Form reset logic
+    document.getElementById('edit-pot-id').value = "";
+    // ... 
+    }
+    
 }
 
 // WISHLIST ❤️ SYMBOL FIX
@@ -417,6 +490,9 @@ function updateShipAddressArea() {
 function updateAddressSummaries() { }
 
 // Start
-displayProducts(pots);
+window.onload = () => {
+    loadPotsFromDB();
+};
+
 updateAuthUI();
 showPage('home');
