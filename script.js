@@ -241,6 +241,108 @@ function updateRecentUI() {
             </div>
         </div>`).join('');
 }
+// 6. CHANGE QUANTITY: Cart lo quantity penchadam leda thagginchadam
+function changeQty(id, d) {
+    const idx = cart.findIndex(c => c.id === id);
+    if(idx > -1) {
+        cart[idx].quantity += d;
+        // Quantity 1 kante thakkuva ayithe cart nundi theesesthundhi
+        if(cart[idx].quantity < 1) cart.splice(idx, 1);
+    } else if(d > 0) {
+        // Kotha item ayithe cart lo add chesthundhi
+        const p = pots.find(x => x.id === id);
+        if(p) cart.push({...p, quantity: 1});
+    }
+    saveToStorage();
+    updateCartUI();
+    displayProducts(pots); // UI lo quantity count update avvadaniki
+}
+
+// 7. UPDATE CART UI: Cart page lo items list and Bill summary chupisthundhi
+function updateCartUI() {
+    const count = cart.reduce((t, i) => t + i.quantity, 0);
+    document.getElementById('cart-count').innerText = count;
+    
+    const list = document.getElementById('cart-items-full');
+    const btnContainer = document.getElementById('cart-buy-now-container');
+    
+    if(!list) return;
+    
+    if(cart.length === 0) {
+        list.innerHTML = "<div class='account-box' style='border-radius:20px;'><h3>Cart Empty ra! Pots add chey.</h3></div>";
+        if(btnContainer) btnContainer.innerHTML = "";
+        return;
+    }
+
+    // Cart items display with rounded design
+    list.innerHTML = cart.map(item => `
+        <div class="account-box" style="display:flex; justify-content:space-between; align-items:center; border-radius:20px; padding:15px; margin-bottom:10px;">
+            <img src="${item.img}" style="width:60px; height:60px; border-radius:12px; object-fit:cover;">
+            <div style="flex-grow:1; margin-left:15px;">
+                <b style="font-size:0.9rem;">${item.name}</b><br>
+                <span style="color:#2E7D32;">₹${item.price} x ${item.quantity}</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <button class="btn-qty" onclick="changeQty(${item.id}, -1)" style="border-radius:8px;">-</button>
+                <b>${item.quantity}</b>
+                <button class="btn-qty" onclick="changeQty(${item.id}, 1)" style="border-radius:8px;">+</button>
+            </div>
+        </div>`).join('');
+
+    let total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+    if(btnContainer) {
+        btnContainer.innerHTML = `
+            <button class="checkout-btn" style="width:100%; border-radius:20px; font-size:1.1rem; padding:15px;" 
+                    onclick="showPage('checkout')">
+                Buy Now (Total: ₹${total})
+            </button>`;
+    }
+}
+
+// 8. HANDLE LOGIN: Manual login logic
+function handleLogin() {
+    const nameInput = document.getElementById('login-username');
+    const name = nameInput ? nameInput.value.trim() : "";
+    
+    if(name) {
+        isLoggedIn = true;
+        localStorage.setItem('currentUser', name);
+        localStorage.setItem('isLoggedIn', 'true');
+        saveToStorage();
+        updateAuthUI();
+        alert("Welcome " + name + "!");
+    } else {
+        alert("Please enter your name ra!");
+    }
+}
+
+// 9. HANDLE LOGOUT: Session clear chesthundhi
+function handleLogout() {
+    if(confirm("Sign out avthunnara?")) {
+        isLoggedIn = false;
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('currentUser');
+        saveToStorage();
+        updateAuthUI();
+        showPage('home'); // Logout ayyaka home ki vellali
+    }
+}
+
+// 10. TOGGLE MENU: Side navigation drawer open/close
+function toggleMenu() {
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('menu-overlay');
+    
+    if(!menu || !overlay) return;
+
+    if(menu.style.right === '0px') {
+        menu.style.right = '-280px';
+        overlay.style.display = 'none';
+    } else {
+        menu.style.right = '0px';
+        overlay.style.display = 'block';
+    }
+}
 
 function toggleWishlist(id) {
     const idx = wishlist.findIndex(w => w.id === id);
