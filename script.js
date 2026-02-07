@@ -163,14 +163,14 @@ function saveProduct() {
     const cat = document.getElementById('new-pot-category').value;
     const imgStr = document.getElementById('new-pot-img').value;
 
-    if(!name || !price || !imgStr) return alert("Details and Image link kachithanga kottu ra!");
+    if(!name || !price || !imgStr) return alert("Details kachithanga kottu ra!");
 
     const imgArr = imgStr.split(',').map(s => s.trim()).filter(s => s !== "");
-    const newId = idIn ? Number(idIn) : Date.now(); // Patha ID leda kotha ID
+    const newId = idIn ? Number(idIn) : Date.now();
 
     const productData = {
         id: newId, 
-        name, 
+        name: name, 
         price: Number(price), 
         category: cat, 
         img: imgArr[0], 
@@ -178,7 +178,7 @@ function saveProduct() {
         stock: true
     };
 
-    // 1. Local array update
+    // 1. Local update (UI Refresh kosam)
     if(idIn) {
         const idx = pots.findIndex(p => p.id == idIn);
         if(idx > -1) pots[idx] = productData;
@@ -186,11 +186,11 @@ function saveProduct() {
         pots.push(productData);
     }
 
-    // 2. Firebase Database Sync (Deeni valle andariki kanipisthundi)
+    // 2. Firebase Database Sync (Main Line)
     database.ref('pots/' + newId).set(productData)
         .then(() => {
-            alert("Success: Saved to Global Database!");
-            // Form Reset Logic
+            alert("Success: Saved to Database!");
+            // Resetting form
             document.getElementById('edit-pot-id').value = "";
             document.getElementById('new-pot-name').value = "";
             document.getElementById('new-pot-price').value = "";
@@ -199,11 +199,13 @@ function saveProduct() {
             
             adminSearchProducts();
             displayProducts(pots);
+            showPage('home'); // Home ki vellu ra
         })
         .catch(err => alert("Error: " + err.message));
 
-    saveToStorage(); // Local backup
+    saveToStorage(); 
 }
+
 
 // ADMIN SAVE FIX: Multi-Image & Form Reset
 
@@ -496,3 +498,4 @@ window.onload = () => {
 
 updateAuthUI();
 showPage('home');
+}
