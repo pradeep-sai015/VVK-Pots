@@ -343,6 +343,87 @@ function toggleMenu() {
         overlay.style.display = 'block';
     }
 }
+// 11. CHECK ADMIN AUTH: Admin password verify chesi panel unlock chesthundhi
+function checkAdminAuth() {
+    const user = document.getElementById('admin-user').value;
+    const pass = document.getElementById('admin-pass').value;
+
+    if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+        showPage('admin');
+        adminSearchProducts(); // Inventory load chesthundhi
+    } else {
+        alert("Wrong Username or Password ra!");
+    }
+}
+
+// 12. REMOVE PRODUCT FROM STORE: Firebase and local nundi product delete chesthundhi
+function removeProductFromStore(id) {
+    if (confirm("Ee product ni permanent ga theeseyala ra?")) {
+        // 1. Firebase nundi remove chesthunnam
+        database.ref('pots/' + id).remove()
+            .then(() => {
+                // 2. Local array update
+                pots = pots.filter(p => p.id !== id);
+                saveToStorage();
+                adminSearchProducts(); // List refresh
+                displayProducts(pots);
+                alert("Product Removed Successfully!");
+            })
+            .catch(err => alert("Error: " + err.message));
+    }
+}
+
+// 13. LOCK ADMIN: Admin panel close chesi account page ki vellipothundhi
+function lockAdmin() {
+    // Admin fields clear chesthunnam
+    document.getElementById('admin-user').value = "";
+    document.getElementById('admin-pass').value = "";
+    showPage('account');
+}
+
+// 14. EDIT PRODUCT: Select chesina product details ni form loki load chesthundhi
+function editProduct(id) {
+    const p = pots.find(x => x.id === id);
+    if (!p) return;
+
+    // Admin form loki details pampisthunnam
+    document.getElementById('edit-pot-id').value = p.id;
+    document.getElementById('new-pot-name').value = p.name;
+    document.getElementById('new-pot-price').value = p.price;
+    document.getElementById('new-pot-category').value = p.category;
+    
+    // Images array ni string ga marchi load chesthunnam
+    document.getElementById('new-pot-img').value = p.images ? p.images.join(', ') : p.img;
+    
+    // Smooth scroll to top of admin form
+    document.querySelector('#admin-page').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 15. UPDATE CHECKOUT UI: Billing summary and delivery details chupisthundhi
+function updateCheckoutUI() {
+    const summary = document.getElementById('checkout-bill-summary');
+    if (!summary) return;
+
+    let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+    let delivery = 0; // Free delivery logic
+    let total = subtotal + delivery;
+
+    // Rounded design thoo billing box
+    summary.innerHTML = `
+        <div class="account-box" style="border-radius:20px; padding:20px; background:#FFF8E1; border: 1px solid #D7CCC8;">
+            <h4 style="margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:5px;">Bill Summary</h4>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span>Items Total:</span> <b>₹${subtotal}</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span>Delivery Charges:</span> <b style="color:green;">FREE</b>
+            </div>
+            <hr style="border:0.5px solid #D7CCC8; margin:10px 0;">
+            <div style="display:flex; justify-content:space-between; font-size:1.2rem; color:#3E2723;">
+                <b>Total Payable:</b> <b>₹${total}</b>
+            </div>
+        </div>`;
+}
 
 function toggleWishlist(id) {
     const idx = wishlist.findIndex(w => w.id === id);
