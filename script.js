@@ -343,14 +343,13 @@ function toggleMenu() {
         overlay.style.display = 'block';
     }
 }
-// 11. CHECK ADMIN AUTH: Admin password verify chesi panel unlock chesthundhi
 function checkAdminAuth() {
     const user = document.getElementById('admin-user').value;
     const pass = document.getElementById('admin-pass').value;
 
     if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
-        showPage('admin');
-        adminSearchProducts(); // Inventory load chesthundhi
+        showPage('admin'); // Ikkada 'admin' page ki redirect avvali
+        adminSearchProducts(); 
     } else {
         alert("Wrong Username or Password ra!");
     }
