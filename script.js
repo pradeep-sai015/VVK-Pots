@@ -489,12 +489,16 @@ function updateShipAddressArea() {
     }
 }
 
-function updateAddressSummaries() { }
+// updateAddressSummaries paina unna brackets ni okasari check chey ra
+function updateAddressSummaries() { } 
 
-// Start
+// --- Start Logic ---
 window.onload = () => {
     loadPotsFromDB();
-};
+    updateAuthUI();
+    showPage('home');
+}; // <-- Ee bracket and semicolon kachithanga add chey ra
+
 
 updateAuthUI();
 showPage('home');
