@@ -152,6 +152,95 @@ function showPage(pageId) {
     if(pageId === 'recent') updateRecentUI();
     if(pageId === 'account') updateAuthUI();
 }
+// 1. UPDATE AUTH UI: Login/Profile display toggle chesthundhi
+function updateAuthUI() {
+    const profile = document.getElementById('user-profile');
+    const login = document.getElementById('login-form');
+    if(isLoggedIn) {
+        profile.style.display = 'block';
+        login.style.display = 'none';
+        document.getElementById('user-name-display').innerText = localStorage.getItem('currentUser') || "User";
+    } else {
+        profile.style.display = 'none';
+        login.style.display = 'block';
+    }
+}
+
+// 2. OPEN PRODUCT DETAILS: Detail page load chesi image slider ready chesthundhi
+function openProductDetail(id) {
+    const p = pots.find(x => x.id === id);
+    if(!p) return; 
+
+    // Recently viewed logic update chesthunnam ra
+    recentlyViewed = recentlyViewed.filter(r => r.id !== id);
+    recentlyViewed.unshift(p);
+    recentlyViewed = recentlyViewed.slice(0, 10); // Max 10 items mathrame unchutham
+    saveToStorage();
+
+    showPage('product-detail');
+    
+    document.getElementById('detail-name').innerText = p.name;
+    document.getElementById('detail-price').innerText = `₹${p.price}`;
+    
+    const slider = document.getElementById('image-slider');
+    const imgList = p.images && p.images.length > 0 ? p.images : [p.img];
+    
+    // Anni images slider lo rounded corners tho load avthayi
+    slider.innerHTML = imgList.map(link => `
+        <img src="${link}" onclick="viewFullImage(this.src)" 
+             style="min-width:100%; height:300px; object-fit:cover; scroll-snap-align:start; border-radius:20px; cursor:zoom-in;">
+    `).join('');
+    
+    // Qty logic refresh chesthunna ra
+    const qty = (cart.find(c => c.id === id) || {quantity: 0}).quantity;
+    document.getElementById('detail-qty-area').innerHTML = `
+        <div style="display:flex; align-items:center; gap:20px; justify-content:center; margin:15px 0;">
+            <button class="btn-large-fixed" style="border-radius:15px;" onclick="changeQty(${p.id}, -1); openProductDetail(${p.id})">-</button>
+            <b style="font-size:1.2rem;">${qty}</b>
+            <button class="btn-large-fixed" style="border-radius:15px;" onclick="changeQty(${p.id}, 1); openProductDetail(${p.id})">+</button>
+        </div>`;
+        
+    document.getElementById('detail-buy-btn-area').innerHTML = `
+        <button onclick="directBuy(${p.id})" class="checkout-btn" style="width:100%; border-radius:20px;">Buy Now</button>`;
+    
+    const isWished = wishlist.some(w => w.id === p.id);
+    document.getElementById('detail-wishlist-icon').innerHTML = `
+        <span onclick="toggleWishlist(${p.id}); openProductDetail(${p.id})">${isWished ? '❤️' : '🤍'}</span>`;
+}
+
+// 3. VIEW FULL IMAGE: Image zoom modal open chesthundhi
+function viewFullImage(src) {
+    const modal = document.getElementById('full-image-modal');
+    const modalImg = document.getElementById('modal-img-content');
+    if(modal && modalImg) {
+        modal.style.display = "flex";
+        modalImg.src = src;
+    }
+}
+
+// 4. CLOSE FULL IMAGE: Zoom modal ni hide chesthundhi
+function closeFullImage() {
+    const modal = document.getElementById('full-image-modal');
+    if(modal) modal.style.display = "none";
+}
+
+// 5. UPDATE RECENT UI: Recently viewed items grid ni update chesthundhi
+function updateRecentUI() {
+    const list = document.getElementById('recent-items-list');
+    if(!list) return;
+    if(recentlyViewed.length === 0) {
+        list.innerHTML = "<div class='account-box' style='grid-column: 1 / -1; border-radius:20px;'><h3>Inka emi chudaledu ra!</h3></div>";
+        return;
+    }
+    list.innerHTML = recentlyViewed.map(p => `
+        <div class="product-card" style="border-radius:25px;">
+            <img src="${p.img}" onclick="openProductDetail(${p.id})" style="width:100%; height:150px; object-fit:cover; border-radius:25px 25px 0 0;">
+            <div style="padding:15px; text-align:center;">
+                <b style="font-size:0.9rem;">${p.name}</b><br>
+                <span style="color:#2e7d32; font-weight:bold;">₹${p.price}</span>
+            </div>
+        </div>`).join('');
+}
 
 function toggleWishlist(id) {
     const idx = wishlist.findIndex(w => w.id === id);
