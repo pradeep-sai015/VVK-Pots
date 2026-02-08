@@ -161,16 +161,46 @@
 </section>
 
 
+
     <section id="address-manage-page" class="page" style="display:none;">
         <div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Address</h2></div>
         <div class="account-box" style="border-radius:25px;">
+<select id="addr-type" class="login-input" style="width:100%; border-radius:12px; margin-bottom:15px; padding:10px;">
+            <option value="Home">🏠 Home Address</option>
+            <option value="Office">🏢 Office Address</option>
+            <option value="Other">📍 Other</option>
+        </select>
             <input type="text" id="addr-house" class="login-input" placeholder="House No">
+                        <input type="text" id="addr-village" class="login-input" placeholder="Village">
             <input type="text" id="addr-city" class="login-input" placeholder="City">
+                        <input type="number" id="addr-pin" class="login-input" placeholder="Pin Code">
             <button onclick="saveAddress()" class="checkout-btn" style="width:100%; border-radius:15px;">Save</button>
         </div>
     </section>
 </main>
+<div class="account-box" style="margin-top:40px; background:#EFEBE9; text-align:center; border-radius: 25px; padding:20px;">
+    <h4 style="color:#3E2723;">📍 Store Location</h4>
+    <p>
+        <a href="https://share.google/ecgRDEIDxOyijSDdf" target="_blank" style="text-decoration:none; color:#2E7D32; font-weight:bold;">
+            V V K POTS COLLECTIONS (MAPS)
+        </a>
+    </p>
+    <p style="color:#5D4037;">Raidurg, Hyderabad.</p>
 
+    <h4 style="color:#3E2723; margin-top:20px;"> Contact Us</h4>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <a href="tel:6301678881" style="text-decoration:none; color:#2E7D32; font-weight:bold;">
+            📞 +91 6301678881
+        </a>
+        <a href="tel:9985027149" style="text-decoration:none; color:#2E7D32;font-weight:bold;">
+            📞 +91 9985027149
+        </a>
+    </div>
+    
+    <div style="text-align:center; padding:15px; font-size:0.75rem; color:#888">
+        <p>*Images are for representational purposes. Original products may slightly vary.</p>
+    </div>
+</div>
 <nav class="bottom-nav">
     <button onclick="showPage('home')" class="nav-item">🏠<span>Home</span></button>
     <button onclick="showPage('account')" class="nav-item">👤<span>Account</span></button>
