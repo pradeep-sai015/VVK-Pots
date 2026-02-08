@@ -153,6 +153,16 @@ function changeQty(id, d) {
   displayProducts(pots);        // home refresh
   updateDetailQty(id);          // detail page refresh
 }
+
+function updateCartCount() {
+
+  const el = document.getElementById('cart-count');
+  if (!el) return;
+
+  const totalQty = cart.reduce((sum, i) => sum + i.quantity, 0);
+
+  el.innerText = totalQty;
+}
 function updateDetailQty(id) {
 
   const qty = (cart.find(c => c.id === id) || {}).quantity || 0;
@@ -520,4 +530,5 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateCartUI();
   updateAuthUI();
   loadSavedAddress();
+ updateCartCount();   // ADD THIS
 });
