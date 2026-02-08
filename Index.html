@@ -1,237 +1,215 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V V K POTS COLLECTIONS</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
-</head>
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+    <script src="https://accounts.google.com/gsi/client" async defer></script>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>V V K POTS COLLECTIONS</title>  
+    <link rel="stylesheet" href="style.css">  
+    <script src="script.js"></script>  
+</head>  <body>  
+<header>  
+    <div class="header-top">  
+        <h1 id="main-title" onclick="showPage('home')" style="cursor:pointer; display:flex; align-items:center; gap:10px; margin:0;">  
+            <img src="https://i.ibb.co/hRw5VczF/Screenshot-2026-02-06-21-34-55-087-com-miui-gallery.png" alt="vvk" style="height:50px; width:45px; border-radius:50%; object-fit:cover;">   
+            V V K POTS  
+        </h1>  
+        <div style="display: flex; align-items: center; gap: 10px;">  
+            <button id="cart-btn" onclick="showPage('cart')" style="border-radius:12px;">🛒 (<span id="cart-count">0</span>)</button>  
+            <button id="menu-btn" onclick="toggleMenu()" style="background:none; border:none; font-size:1.5rem; color:white;">☰</button>  
+        </div>  
+    </div>  
+</header>  <div id="side-menu" class="side-nav">  
+    <div class="menu-header"><h3>VKK Menu</h3><button onclick="toggleMenu()" class="close-menu">&times;</button></div>  
+    <div class="menu-items">  
+        <a href="#" onclick="showPage('home'); toggleMenu()">🏠 Home</a>  
+        <a href="#" onclick="showPage('account'); toggleMenu()">👤 My Account</a>  
+        <div class="menu-divider">Categories</div>  
+        <a href="#" onclick="filterCategory('Clay'); toggleMenu()">🏺 Clay Pots</a>  
+        <a href="#" onclick="filterCategory('Ceramic'); toggleMenu()">🎨 Ceramic Pots</a>  
+        <a href="#" onclick="filterCategory('Marriage Pots'); toggleMenu()">💍 Marriage Pots</a>  
+        <a href="#" onclick="filterCategory('Diya'); toggleMenu()">🪔 Diya</a>  
+        <div class="menu-divider">Legal & Info</div>  
+        <a href="#" onclick="showPage('privacy'); toggleMenu()">🔒 Privacy Policy</a>  
+        <a href="#" onclick="showPage('terms'); toggleMenu()">📄 Terms & Conditions</a>  
+        <a href="#" onclick="showPage('copyright-info'); toggleMenu()">©️ Copyright Info</a>  
+    </div>   
+</div>  
+<div id="menu-overlay" onclick="toggleMenu()"></div>  <main>  
+    <section id="home-page" class="page">  
+        <div class="search-container">  
+            <input type="text" id="search-trigger" placeholder="Search for pots..." onclick="showPage('search')" readonly style="border-radius:25px;">  
+        </div>  
+        <div class="category-tags">  
+            <span class="tag active" onclick="filterCategory('All')">All</span>  
+            <span class="tag" onclick="filterCategory('Clay')">🏺 Clay</span>  
+            <span class="tag" onclick="filterCategory('Ceramic')">🎨 Ceramic</span>  
+            <span class="tag" onclick="filterCategory('Marriage Pots')">💍 Marriage</span>  
+        </div>  
+        <div id="product-list" class="grid-container"></div>  
+    </section>  <section id="product-detail-page" class="page" style="display:none;">  
+    <div class="cart-header-full"><button onclick="showPage('home')" class="back-btn">←</button><h2>Details</h2></div>  
+    <div class="account-box" style="position:relative; border-radius:25px;">  
+        <div id="detail-wishlist-icon" style="position:absolute; top:10px; right:10px; font-size:1.8rem;"></div>  
+        <div id="image-slider" style="display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px; border-radius:20px;"></div>  
+        <h2 id="detail-name"></h2>  
+        <p id="detail-price" style="color:#2e7d32; font-weight:bold;"></p>  
+        <div id="detail-qty-area"></div>  
+        <div id="detail-buy-btn-area"></div>  
+    </div>  
+</section>  
 
-<body>
-<header>
-    <div class="header-top">
-        <h1 id="main-title" onclick="showPage('home')" style="cursor:pointer; display:flex; align-items:center; gap:10px; margin:0;">
-            <img src="https://i.ibb.co/hRw5VczF/Screenshot-2026-02-06-21-34-55-087-com-miui-gallery.png" alt="vvk" style="height:50px; width:45px; border-radius:50%; object-fit:cover;"> 
-            V V K POTS
-        </h1>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <button id="cart-btn" onclick="showPage('cart')" style="border-radius:12px;">🛒 (<span id="cart-count">0</span>)</button>
-            <button id="menu-btn" onclick="toggleMenu()" style="background:none; border:none; font-size:1.5rem; color:white;">☰</button>
-        </div>
-    </div>
-</header>
+<section id="cart-page" class="page" style="display:none;">  
+    <div class="cart-header-full"><button onclick="showPage('home')" class="back-btn">←</button><h2>My Cart</h2></div>  
+    <div id="cart-items-full"></div>  
+    <div id="cart-buy-now-container" style="padding:20px;"></div>  
+</section>  
 
-<div id="side-menu" class="side-nav">
-    <div class="menu-header"><h3>VKK Menu</h3><button onclick="toggleMenu()" class="close-menu">&times;</button></div>
-    <div class="menu-items">
-        <a href="#" onclick="showPage('home'); toggleMenu()">🏠 Home</a>
-        <a href="#" onclick="showPage('account'); toggleMenu()">👤 My Account</a>
-        <div class="menu-divider">Categories</div>
-        <a href="#" onclick="filterCategory('Clay'); toggleMenu()">🏺 Clay Pots</a>
-        <a href="#" onclick="filterCategory('Ceramic'); toggleMenu()">🎨 Ceramic Pots</a>
-        <a href="#" onclick="filterCategory('Marriage Pots'); toggleMenu()">💍 Marriage Pots</a>
-        <a href="#" onclick="filterCategory('Diya'); toggleMenu()">🪔 Diya</a>
-        <div class="menu-divider">Legal & Info</div>
-        <a href="#" onclick="showPage('privacy'); toggleMenu()">🔒 Privacy Policy</a>
-        <a href="#" onclick="showPage('terms'); toggleMenu()">📄 Terms & Conditions</a>
-        <a href="#" onclick="showPage('copyright-info'); toggleMenu()">©️ Copyright Info</a>
-    </div> 
-</div>
-<div id="menu-overlay" onclick="toggleMenu()"></div>
+<section id="checkout-page" class="page" style="display:none;">  
+<div class="cart-header-full">  
+    <button onclick="showPage('cart')" class="back-btn">←</button>  
+    <h2>Checkout</h2>  
+</div>  
+  
+<div id="checkout-items" class="cart-container"></div>  
 
-<main>
-    <section id="home-page" class="page">
-        <div class="search-container">
-            <input type="text" id="search-trigger" placeholder="Search for pots..." onclick="showPage('search')" readonly style="border-radius:25px;">
-        </div>
-        <div class="category-tags">
-            <span class="tag active" onclick="filterCategory('All')">All</span>
-            <span class="tag" onclick="filterCategory('Clay')">🏺 Clay</span>
-            <span class="tag" onclick="filterCategory('Ceramic')">🎨 Ceramic</span>
-            <span class="tag" onclick="filterCategory('Marriage Pots')">💍 Marriage</span>
-        </div>
-        <div id="product-list" class="grid-container"></div>
-    </section>
+<div id="selected-address-info" class="account-box" style="margin: 15px; border-radius: 20px; background: #FFF9C4; padding: 15px; border: 1px dashed #FBC02D;">  
+    <p id="display-address" style="color: #3E2723; font-size: 14px;"> Address loading...</p>  
+</div>  
 
-    <section id="product-detail-page" class="page" style="display:none;">
-        <div class="cart-header-full"><button onclick="showPage('home')" class="back-btn">←</button><h2>Details</h2></div>
-        <div class="account-box" style="position:relative; border-radius:25px;">
-            <div id="detail-wishlist-icon" style="position:absolute; top:10px; right:10px; font-size:1.8rem;"></div>
-            <div id="image-slider" style="display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:10px; border-radius:20px;"></div>
-            <h2 id="detail-name"></h2>
-            <p id="detail-price" style="color:#2e7d32; font-weight:bold;"></p>
-            <div id="detail-qty-area"></div>
-            <div id="detail-buy-btn-area"></div>
-        </div>
-    </section>
-
-    <section id="cart-page" class="page" style="display:none;">
-        <div class="cart-header-full"><button onclick="showPage('home')" class="back-btn">←</button><h2>My Cart</h2></div>
-        <div id="cart-items-full"></div>
-        <div id="cart-buy-now-container" style="padding:20px;"></div>
-    </section>
-
-    <section id="checkout-page" class="page" style="display:none;">
-    <div class="cart-header-full">
-        <button onclick="showPage('cart')" class="back-btn">←</button>
-        <h2>Checkout</h2>
-    </div>
-    
-    <div id="checkout-items" class="cart-container"></div>
-
-    <div id="selected-address-info" class="account-box" style="margin: 15px; border-radius: 20px; background: #FFF9C4; padding: 15px; border: 1px dashed #FBC02D;">
-        <p id="display-address" style="color: #3E2723; font-size: 14px;"> Address loading...</p>
-    </div>
-
-    <div class="cart-total-section">
-        <div class="total-row">
-            <span>Total Amount:</span>
-            <span id="checkout-total-price">₹0</span>
-        </div>
-        <button onclick="checkoutWhatsApp()" class="checkout-btn" style="width: 100%; border-radius: 15px; margin-top: 15px; background: #25D366;">
-            🚀 Buy Now via WhatsApp
-        </button>
-    </div>
-</section>
-
-
-    <section id="account-page" class="page" style="display:none;">
-        <div id="user-profile" style="display:none;">
-            <div class="account-box" style="text-align:center; border-radius:20px;"><h3>Hi, <span id="user-name-display"></span></h3></div>
-            <div class="account-box" onclick="showPage('address-manage')" style="border-radius:15px;">📍 Manage Address</div>
-            <div class="account-box" onclick="showPage('wishlist')" style="border-radius:15px;">❤️ My Wishlist</div>
-            <div class="account-box" onclick="showPage('recent')" style="border-radius:15px;">🕒 Recently Viewed</div>
-           <div class="account-box logout" onclick="handleLogout()" style="color:red; text-align:center; border-radius:15px;">Sign Out</div>
-        </div>
-        <div id="login-form" class="account-box" style="border-radius:25px;">
-            <input type="text" id="login-username" placeholder="Name..." class="login-input">
-            <button onclick="handleLogin()" class="checkout-btn" style="width:100%; border-radius:15px;">Login</button>
-            <div id="g_id_onload" data-client_id="596075739343-o9i3ia17u5rb8rls77e55t09c068v1qb.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
-            <div class="g_id_signin" data-type="standard"></div>
-        </div>
-    </section>
-
-    <section id="wishlist-page" class="page" style="display:none;"><div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Wishlist</h2></div><div id="wishlist-items-list" class="grid-container"></div></section>
-    <section id="recent-page" class="page" style="display:none;"><div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Recent</h2></div><div id="recent-items-list" class="grid-container"></div></section>
-
-    <section id="admin-login-page" class="page" style="display:none;">
-        <div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Admin</h2></div>
-        <div class="account-box" style="border-radius:25px;">
-            <input type="text" id="admin-user" class="login-input" placeholder="User"><input type="password" id="admin-pass" class="login-input" placeholder="Pass">
-            <button onclick="checkAdminAuth()" class="checkout-btn" style="width:100%; border-radius:15px;">Unlock</button>
-        </div>
-    </section>
-    <section id="admin-page" class="page" style="display:none;">
-        <div class="cart-header-full"><h2>Inventory</h2><button onclick="lockAdmin()" class="back-btn">Exit</button></div>
-        <div class="account-box" style="border-radius:25px;">
-            <input type="hidden" id="edit-pot-id">
-            <input type="text" id="new-pot-name" class="login-input" placeholder="Name">
-            <input type="number" id="new-pot-price" class="login-input" placeholder="Price">
-            <input type="text" id="new-pot-category" class="login-input" placeholder="Category">
-            <textarea id="new-pot-img" class="login-input" placeholder="Image Link(s)"></textarea>
-            <button onclick="saveProduct()" class="checkout-btn" style="width:100%; border-radius:15px;">Save</button>
-        </div>
-        <div id="admin-remove-list"></div>
-    </section>
-
-    <section id="privacy-page" class="page" style="display:none;">
-    <div class="cart-header-full">
-        <button onclick="showPage('home')" class="back-btn">←</button>
-        <h2>Privacy Policy</h2>
-    </div>
-    <div class="account-box" style="border-radius:25px;">
-        <p>At <b>V V K POTS</b>, we value your privacy. We collect your Name and Address solely for order delivery purposes.</p>
-        <p>Your Google Login information is handled securely through Google's encrypted services.</p>
-        <p>We do not sell or share your personal data with third parties. Your trust is our priority.</p>
-    </div> </section>
-    
-
-<section id="terms-page" class="page" style="display:none;">
-    <div class="cart-header-full">
-        <button onclick="showPage('home')" class="back-btn">←</button>
-        <h2>Terms</h2>
-    </div>
-    <div class="account-box" style="border-radius:25px;">
-        <p><b>1. Order Confirmation:</b> All orders are finalized only after a confirmation message is sent via WhatsApp.</p>
-        <p><b>2. Fragile Items:</b> Since these are clay products, please check for damages upon delivery and notify us immediately with a photo.</p>
-        <p><b>3. Shipping:</b> Standard delivery takes 2-3 business days within Hyderabad.</p>
-    </div>
-</section>
-
-<section id="copyright-info-page" class="page" style="display:none;">
-    <div class="cart-header-full">
-        <button onclick="showPage('home')" class="back-btn">←</button>
-        <h2>Copyright</h2>
-    </div>
-    <div class="account-box" style="border-radius:25px; text-align:center;"> 
-        <p>All content, designs, and product images displayed on this website are the intellectual property of V V K Pots.</p>
-        <p>Unauthorized use or reproduction of any material without prior written permission is strictly prohibited.</p>
-        <p><b>All Rights Reserved.</b></p>
-    </div>
-</section>
-    <section id="address-manage-page" class="page" style="display:none;">
-    <div class="cart-header-full">
-        <button onclick="showPage('account')" class="back-btn">←</button>
-        <h2>Manage Address</h2>
-    </div>
-    <div class="account-box" style="border-radius:25px; padding:20px;">
-        <h4 style="color:#3E2723; margin-bottom:15px;">📍 Delivery Address</h4>
-        <select id="addr-type" class="login-input" style="width:100%; border-radius:12px; margin-bottom:10px;">
-            <option value="Home">🏠 Home</option>
-            <option value="Office">🏢 Office</option>
-        </select>
-        <input type="text" id="addr-house" class="login-input" placeholder="House No / Flat" style="border-radius:12px;">
-        <input type="text" id="addr-village" class="login-input" placeholder="Area / Landmark" style="border-radius:12px;">
-        <input type="text" id="addr-city" class="login-input" placeholder="City" style="border-radius:12px;">
-        <input type="number" id="addr-pin" class="login-input" placeholder="Pincode" style="border-radius:12px;">
-        
-        <button onclick="saveAddressLocal()" class="checkout-btn" style="width:100%; border-radius:15px; margin-top:10px;">
-            Save Address
-        </button>
-    </div>
-</section>
-
-<div id="whatsapp-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; text-align:center; padding-top:40vh;">
-    <div style="background:white; padding:30px; border-radius:25px; display:inline-block; border: 2px solid #25D366;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="60" style="margin-bottom:15px;">
-        <h3 style="color:#25D366;">Going to WhatsApp...</h3>
-        <p>Arey, nee order process chesthunna!</p>
-    </div>
+<div class="cart-total-section">  
+    <div class="total-row">  
+        <span>Total Amount:</span>  
+        <span id="checkout-total-price">₹0</span>  
+    </div>  
+    <button onclick="checkoutWhatsApp()" class="checkout-btn" style="width: 100%; border-radius: 15px; margin-top: 15px; background: #25D366;">  
+        🚀 Buy Now via WhatsApp  
+    </button>  
 </div>
 
-</main>
-<div class="account-box" style="margin-top:40px; background:#EFEBE9; text-align:center; border-radius: 25px; padding:20px;">
-    <h4 style="color:#3E2723;">📍 Store Location</h4>
-    <p>
-        <a href="https://share.google/ecgRDEIDxOyijSDdf" target="_blank" style="text-decoration:none; color:#2E7D32; font-weight:bold;">
-            V V K POTS COLLECTIONS (MAPS)
-        </a>
-    </p>
-    <p style="color:#5D4037;">Raidurg, Hyderabad.</p>
+</section>  <section id="account-page" class="page" style="display:none;">  
+    <div id="user-profile" style="display:none;">  
+        <div class="account-box" style="text-align:center; border-radius:20px;"><h3>Hi, <span id="user-name-display"></span></h3></div>  
+        <div class="account-box" onclick="showPage('address-manage')" style="border-radius:15px;">📍 Manage Address</div>  
+        <div class="account-box" onclick="showPage('wishlist')" style="border-radius:15px;">❤️ My Wishlist</div>  
+        <div class="account-box" onclick="showPage('recent')" style="border-radius:15px;">🕒 Recently Viewed</div>  
+       <div class="account-box logout" onclick="handleLogout()" style="color:red; text-align:center; border-radius:15px;">Sign Out</div>  
+    </div>  
+    <div id="login-form" class="account-box" style="border-radius:25px;">  
+        <input type="text" id="login-username" placeholder="Name..." class="login-input">  
+        <button onclick="handleLogin()" class="checkout-btn" style="width:100%; border-radius:15px;">Login</button>  
+        <div id="g_id_onload" data-client_id="596075739343-o9i3ia17u5rb8rls77e55t09c068v1qb.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>  
+        <div class="g_id_signin" data-type="standard"></div>  
+    </div>  
+</section>  
 
-    <h4 style="color:#3E2723; margin-top:20px;"> Contact Us</h4>
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-        <a href="tel:6301678881" style="text-decoration:none; color:#2E7D32; font-weight:bold;">
-            📞 +91 6301678881
-        </a>
-        <a href="tel:9985027149" style="text-decoration:none; color:#2E7D32;font-weight:bold;">
-            📞 +91 9985027149
-        </a>
-    </div>
-    
-    <div style="text-align:center; padding:15px; font-size:0.75rem; color:#888">
-        <p>*Images are for representational purposes. Original products may slightly vary.</p>
-    </div>
-</div>
-<nav class="bottom-nav">
-    <button onclick="showPage('home')" class="nav-item">🏠<span>Home</span></button>
-    <button onclick="showPage('account')" class="nav-item">👤<span>Account</span></button>
-</nav>
+<section id="wishlist-page" class="page" style="display:none;"><div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Wishlist</h2></div><div id="wishlist-items-list" class="grid-container"></div></section>  
+<section id="recent-page" class="page" style="display:none;"><div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Recent</h2></div><div id="recent-items-list" class="grid-container"></div></section>  
 
-<div id="full-image-modal" onclick="closeFullImage()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center;">
-    <img id="modal-img-content" style="max-width:90%; border-radius:15px;">
+<section id="admin-login-page" class="page" style="display:none;">  
+    <div class="cart-header-full"><button onclick="showPage('account')" class="back-btn">←</button><h2>Admin</h2></div>  
+    <div class="account-box" style="border-radius:25px;">  
+        <input type="text" id="admin-user" class="login-input" placeholder="User"><input type="password" id="admin-pass" class="login-input" placeholder="Pass">  
+        <button onclick="checkAdminAuth()" class="checkout-btn" style="width:100%; border-radius:15px;">Unlock</button>  
+    </div>  
+</section>  
+<section id="admin-page" class="page" style="display:none;">  
+    <div class="cart-header-full"><h2>Inventory</h2><button onclick="lockAdmin()" class="back-btn">Exit</button></div>  
+    <div class="account-box" style="border-radius:25px;">  
+        <input type="hidden" id="edit-pot-id">  
+        <input type="text" id="new-pot-name" class="login-input" placeholder="Name">  
+        <input type="number" id="new-pot-price" class="login-input" placeholder="Price">  
+        <input type="text" id="new-pot-category" class="login-input" placeholder="Category">  
+        <textarea id="new-pot-img" class="login-input" placeholder="Image Link(s)"></textarea>  
+        <button onclick="saveProduct()" class="checkout-btn" style="width:100%; border-radius:15px;">Save</button>  
+    </div>  
+    <div id="admin-remove-list"></div>  
+</section>  
+
+<section id="privacy-page" class="page" style="display:none;">  
+<div class="cart-header-full">  
+    <button onclick="showPage('home')" class="back-btn">←</button>  
+    <h2>Privacy Policy</h2>  
+</div>  
+<div class="account-box" style="border-radius:25px;">  
+    <p>At <b>V V K POTS</b>, we value your privacy. We collect your Name and Address solely for order delivery purposes.</p>  
+    <p>Your Google Login information is handled securely through Google's encrypted services.</p>  
+    <p>We do not sell or share your personal data with third parties. Your trust is our priority.</p>  
+</div> </section>
+
+<section id="terms-page" class="page" style="display:none;">  
+    <div class="cart-header-full">  
+        <button onclick="showPage('home')" class="back-btn">←</button>  
+        <h2>Terms</h2>  
+    </div>  
+    <div class="account-box" style="border-radius:25px;">  
+        <p><b>1. Order Confirmation:</b> All orders are finalized only after a confirmation message is sent via WhatsApp.</p>  
+        <p><b>2. Fragile Items:</b> Since these are clay products, please check for damages upon delivery and notify us immediately with a photo.</p>  
+        <p><b>3. Shipping:</b> Standard delivery takes 2-3 business days within Hyderabad.</p>  
+    </div>  
+</section>  <section id="copyright-info-page" class="page" style="display:none;">  
+    <div class="cart-header-full">  
+        <button onclick="showPage('home')" class="back-btn">←</button>  
+        <h2>Copyright</h2>  
+    </div>  
+    <div class="account-box" style="border-radius:25px; text-align:center;">   
+        <p>All content, designs, and product images displayed on this website are the intellectual property of V V K Pots.</p>  
+        <p>Unauthorized use or reproduction of any material without prior written permission is strictly prohibited.</p>  
+        <p><b>All Rights Reserved.</b></p>  
+    </div>  
+</section>  
+    <section id="address-manage-page" class="page" style="display:none;">  
+    <div class="cart-header-full">  
+        <button onclick="showPage('account')" class="back-btn">←</button>  
+        <h2>Manage Address</h2>  
+    </div>  
+    <div class="account-box" style="border-radius:25px; padding:20px;">  
+        <h4 style="color:#3E2723; margin-bottom:15px;">📍 Delivery Address</h4>  
+        <select id="addr-type" class="login-input" style="width:100%; border-radius:12px; margin-bottom:10px;">  
+            <option value="Home">🏠 Home</option>  
+            <option value="Office">🏢 Office</option>  
+        </select>  
+        <input type="text" id="addr-house" class="login-input" placeholder="House No / Flat" style="border-radius:12px;">  
+        <input type="text" id="addr-village" class="login-input" placeholder="Area / Landmark" style="border-radius:12px;">  
+        <input type="text" id="addr-city" class="login-input" placeholder="City" style="border-radius:12px;">  
+        <input type="number" id="addr-pin" class="login-input" placeholder="Pincode" style="border-radius:12px;">  <button onclick="saveAddressLocal()" class="checkout-btn" style="width:100%; border-radius:15px; margin-top:10px;">  
+        Save Address  
+    </button>  
 </div>
-</body>
-</html>
+
+</section>  <div id="whatsapp-loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; text-align:center; padding-top:40vh;">  
+    <div style="background:white; padding:30px; border-radius:25px; display:inline-block; border: 2px solid #25D366;">  
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="60" style="margin-bottom:15px;">  
+        <h3 style="color:#25D366;">Going to WhatsApp...</h3>  
+        <p>Arey, nee order process chesthunna!</p>  
+    </div>  
+</div>  </main>  
+<div class="account-box" style="margin-top:40px; background:#EFEBE9; text-align:center; border-radius: 25px; padding:20px;">  
+    <h4 style="color:#3E2723;">📍 Store Location</h4>  
+    <p>  
+        <a href="https://share.google/ecgRDEIDxOyijSDdf" target="_blank" style="text-decoration:none; color:#2E7D32; font-weight:bold;">  
+            V V K POTS COLLECTIONS (MAPS)  
+        </a>  
+    </p>  
+    <p style="color:#5D4037;">Raidurg, Hyderabad.</p>  <h4 style="color:#3E2723; margin-top:20px;"> Contact Us</h4>  
+<div style="display: flex; flex-direction: column; gap: 15px;">  
+    <a href="tel:6301678881" style="text-decoration:none; color:#2E7D32; font-weight:bold;">  
+        📞 +91 6301678881  
+    </a>  
+    <a href="tel:9985027149" style="text-decoration:none; color:#2E7D32;font-weight:bold;">  
+        📞 +91 9985027149  
+    </a>  
+</div>  
+  
+<div style="text-align:center; padding:15px; font-size:0.75rem; color:#888">  
+    <p>*Images are for representational purposes. Original products may slightly vary.</p>  
+</div>
+
+</div>  
+<nav class="bottom-nav">  
+    <button onclick="showPage('home')" class="nav-item">🏠<span>Home</span></button>  
+    <button onclick="showPage('account')" class="nav-item">👤<span>Account</span></button>  
+</nav>  <div id="full-image-modal" onclick="closeFullImage()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center;">  
+    <img id="modal-img-content" style="max-width:90%; border-radius:15px;">  
+</div>  
+</body>  
+    </html>
