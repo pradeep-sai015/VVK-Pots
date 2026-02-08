@@ -1,17 +1,3 @@
-// --- 1. FIREBASE CONFIGURATION ---
-const firebaseConfig = {
-  apiKey: "AIzaSyBLukl9cIxfzOUuing87QgbImaMK7US7lk",
-  authDomain: "vvk-pots.firebaseapp.com",
-  databaseURL: "https://vvk-pots-default-rtdb.firebaseio.com",
-  projectId: "vvk-pots",
-  storageBucket: "vvk-pots.firebasestorage.app",
-  messagingSenderId: "475009142869",
-  appId: "1:475009142869:web:6ffff48dae98b2fe5f44dc",
-  measurementId: "G-31RKTKRTV7"
-};
-
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
 
 // --- 2. STATE MANAGEMENT ---
 const defaultPots = [
