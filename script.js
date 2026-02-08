@@ -211,28 +211,43 @@ function updateCartUI() {
       Buy Now
     </button>`;
 }
-// ===== 9. CHECKOUT =====
+
 function updateCheckoutUI() {
 
-  const box = document.getElementById('checkout-items');
+  // correct total calculate
+  const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
 
-  const total = getTotal();
+  const priceBox = document.getElementById('checkout-total-price');
+  if (priceBox) {
+    priceBox.innerText = "₹" + total;
+  }
+
+  // address section refresh
+  loadAddressOptions();
+}
+function loadAddressOptions() {
+
+  const saved = JSON.parse(localStorage.getItem('userAddress'));
+  const box = document.getElementById('display-address');
+
+  if (!box) return;
+
+  if (!saved) {
+    box.innerHTML = `
+      <select id="checkout-address-select" style="width:100%; padding:10px; border-radius:15px;">
+        <option value="">Select Address</option>
+        <option value="Home">Home Address</option>
+        <option value="Office">Office Address</option>
+      </select>`;
+    return;
+  }
 
   box.innerHTML = `
-    <div class="account-box">
-
-      <h3>Bill Summary</h3>
-
-      <div>Items Total: ₹${total}</div>
-      <div>Delivery: FREE</div>
-
-      <hr>
-
-      <b>Total Payable: ₹${total}</b>
-
-    </div>`;
+    <select id="checkout-address-select" style="width:100%; padding:10px; border-radius:15px;">
+      <option value="Home">Home - ${saved.house}, ${saved.city}</option>
+      <option value="Office">Office - ${saved.house}, ${saved.city}</option>
+    </select>`;
 }
-
 // ===== 10. SAVE ADDRESS =====
 function saveAddressLocal() {
 
@@ -274,33 +289,44 @@ function saveAddressLocal() {
   alert("Saved ra");
 } ${a.city} - ${a.pin}`;
 }
+function checkoutWhatsApp() {
 
-// ===== 12. WHATSAPP =====
-function checkoutWhatsApp(){
-  const a=JSON.parse(localStorage.getItem('userAddress'));
+  const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
 
-  if(!a){
-    alert("Address save chey");
-    showPage('address-manage');
-    return;
-  }
-
-  if(cart.length===0){
+  if (cart.length === 0) {
     alert("Cart empty");
     return;
   }
 
-  document.getElementById('whatsapp-loader').style.display='block';
+  const addrType =
+    document.getElementById('checkout-address-select').value;
 
-  let msg="VVK ORDER%0A";
-  cart.forEach(i=>msg+=`${i.name} x ${i.quantity}%0A`);
-  msg+=`%0AAddress:%0A${a.house}, ${a.city}`;
+  if (!addrType) {
+    alert("Address select chey ra");
+    return;
+  }
 
-  setTimeout(()=>{
-    window.location.href=`https://wa.me/916301678881?text=${msg}`;
-  },1500);
+  const saved = JSON.parse(localStorage.getItem('userAddress'));
+
+  let addressText =
+    addrType + " - " + saved.house + ", " + saved.city;
+
+  let msg = "VVK ORDER%0A";
+
+  cart.forEach(i => {
+    msg += `${i.name} x ${i.quantity}%0A`;
+  });
+
+  msg += `%0ATotal: ₹${total}`;
+  msg += `%0AAddress: ${addressText}`;
+
+  document.getElementById('whatsapp-loader').style.display = 'block';
+
+  setTimeout(() => {
+    window.location.href =
+      `https://wa.me/916301678881?text=${msg}`;
+  }, 1200);
 }
-
 // ===== 13. WISHLIST =====
 function toggleWishlist(id){
   const i=wishlist.findIndex(w=>w.id===id);
