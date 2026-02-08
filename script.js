@@ -147,31 +147,45 @@ function changeQty(id,d){
   updateCartUI();
   displayProducts(pots);
 }
+function updateCartUI() {
 
-// ===== 8. CART UI =====
-function updateCartUI(){
-  document.getElementById('cart-count').innerText=
-    cart.reduce((s,i)=>s+i.quantity,0);
+  const list = document.getElementById('cart-items-full');
+  const buyBox = document.getElementById('cart-buy-now-container');
 
-  const list=document.getElementById('cart-items-full');
-  if(!list) return;
-
-  if(cart.length===0){
-    list.innerHTML="Cart Empty ra";
+  if (cart.length === 0) {
+    list.innerHTML = "<h3>Cart Empty</h3>";
+    buyBox.innerHTML = "";
     return;
   }
 
-  list.innerHTML=cart.map(i=>`
-    <div>
-      <b>${i.name}</b>
-      ₹${i.price} x ${i.quantity}
+  list.innerHTML = cart.map(i => `
+    <div class="account-box">
+      <b>${i.name}</b> ₹${i.price} x ${i.quantity}
 
       <button onclick="changeQty(${i.id},-1)">-</button>
       <button onclick="changeQty(${i.id},1)">+</button>
     </div>
   `).join('');
-}
 
+  const total = getTotal();
+
+  buyBox.innerHTML = `
+    <div class="account-box">
+
+      <h3>Bill Summary</h3>
+
+      Items Total: ₹${total}<br>
+      Delivery: FREE<br>
+
+      <b>Total: ₹${total}</b>
+
+      <button class="checkout-btn"
+              onclick="showPage('checkout')">
+        Buy Now
+      </button>
+
+    </div>`;
+}
 // ===== 9. CHECKOUT =====
 function updateCheckoutUI(){
   const total=cart.reduce((s,i)=>s+i.price*i.quantity,0);
@@ -243,21 +257,31 @@ function toggleWishlist(id){
   saveToStorage();
   displayProducts(pots);
 }
+function updateWishlistUI() {
 
-// ===== 14. WISHLIST UI =====
-function updateWishlistUI(){
-  const list=document.getElementById('wishlist-items-list');
-  if(!list)return;
+  const list = document.getElementById('wishlist-items-list');
 
-  if(wishlist.length===0){
-    list.innerHTML="Empty ra";
+  if (wishlist.length === 0) {
+    list.innerHTML = "<h3>Wishlist empty ra</h3>";
     return;
   }
 
-  list.innerHTML=wishlist.map(p=>`
-    <div onclick="openProductDetail(${p.id})">
-      <img src="${p.img}">
-      <b>${p.name}</b>
+  list.innerHTML = wishlist.map(p => `
+    <div class="product-card">
+
+      <img src="${p.img}"
+           onclick="openProductDetail(${p.id})">
+
+      <div style="text-align:center;padding:8px;">
+
+        <b>${p.name}</b><br>
+
+        <button onclick="toggleWishlist(${p.id})"
+                style="background:#ffdddd;border:none;">
+          Remove
+        </button>
+
+      </div>
     </div>
   `).join('');
 }
@@ -274,14 +298,19 @@ function updateRecentUI(){
     </div>
   `).join('');
 }
+function handleLogin() {
 
-// ===== 16. LOGIN =====
-function handleLogin(){
-  const n=document.getElementById('login-username').value.trim();
-  if(!n)return alert("Name enter chey");
+  const name =
+    document.getElementById('login-username').value.trim();
 
-  isLoggedIn=true;
-  localStorage.setItem('currentUser',n);
+  if (!name) return alert("Name enter chey ra");
+
+  isLoggedIn = true;
+
+  localStorage.setItem('currentUser', name);
+
+  document.getElementById('user-name-display').innerText = name;
+
   updateAuthUI();
 }
 
@@ -305,11 +334,26 @@ function updateAuthUI(){
   }
 }
 
-// ===== 19. FILTER =====
-function filterCategory(c){
+function filterCategory(c) {
+
+  // color highlight
+  document.querySelectorAll('.tag').forEach(t => {
+    if (t.innerText.includes(c)) {
+      t.style.background = "#2E7D32";
+      t.style.color = "white";
+    } else {
+      t.style.background = "#eee";
+      t.style.color = "black";
+    }
+  });
+
   showPage('home');
-  const f=c==='All'?pots:pots.filter(p=>p.category===c);
-  displayProducts(f);
+
+  const filtered = c === 'All'
+      ? pots
+      : pots.filter(p => p.category === c);
+
+  displayProducts(filtered);
 }
 
 // ===== 20. MENU =====
