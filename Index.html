@@ -34,6 +34,7 @@
         <a href="#" onclick="showPage('copyright-info'); toggleMenu()">©️ Copyright Info</a>  
     </div>   
 </div>  
+    
 <div id="menu-overlay" onclick="toggleMenu()"></div>  <main>  
     <section id="home-page" class="page">  
         <div class="search-container">  
@@ -44,6 +45,7 @@
             <span class="tag" onclick="filterCategory('Clay')">🏺 Clay</span>  
             <span class="tag" onclick="filterCategory('Ceramic')">🎨 Ceramic</span>  
             <span class="tag" onclick="filterCategory('Marriage Pots')">💍 Marriage</span>  
+            <span class="tag" onclick="filterCategory('Diya')">Diya</span>
         </div>  
         <div id="product-list" class="grid-container"></div>  
     </section>  <section id="product-detail-page" class="page" style="display:none;">  
@@ -63,7 +65,18 @@
     <div id="cart-items-full"></div>  
     <div id="cart-buy-now-container" style="padding:20px;"></div>  
 </section>  
+<section id="search-page" class="page" style="display:none;">
+  <div class="cart-header-full">
+    <button onclick="showPage('home')" class="back-btn">Back</button>
+    <h2>Search</h2>
+  </div>
 
+  <input id="main-search-input" onkeyup="performSearch()" 
+         placeholder="Search pots..."
+         style="width:90%;margin:10px;border-radius:15px;">
+
+  <div id="search-results-list" class="grid-container"></div>
+</section>
 <section id="checkout-page" class="page" style="display:none;">  
 <div class="cart-header-full">  
     <button onclick="showPage('cart')" class="back-btn">←</button>  
