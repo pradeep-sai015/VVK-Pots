@@ -329,17 +329,7 @@ function toggleMenu() {
         overlay.style.display = 'block';
     }
 }
-function checkAdminAuth() {
-    const user = document.getElementById('admin-user').value;
-    const pass = document.getElementById('admin-pass').value;
 
-    if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
-        showPage('admin'); // Ikkada 'admin' page ki redirect avvali
-        adminSearchProducts(); 
-    } else {
-        alert("Wrong Username or Password ra!");
-    }
-}
 
 // 12. REMOVE PRODUCT FROM STORE: Firebase and local nundi product delete chesthundhi
 function removeProductFromStore(id) {
@@ -358,31 +348,8 @@ function removeProductFromStore(id) {
     }
 }
 
-// 13. LOCK ADMIN: Admin panel close chesi account page ki vellipothundhi
-function lockAdmin() {
-    // Admin fields clear chesthunnam
-    document.getElementById('admin-user').value = "";
-    document.getElementById('admin-pass').value = "";
-    showPage('account');
-}
 
-// 14. EDIT PRODUCT: Select chesina product details ni form loki load chesthundhi
-function editProduct(id) {
-    const p = pots.find(x => x.id === id);
-    if (!p) return;
 
-    // Admin form loki details pampisthunnam
-    document.getElementById('edit-pot-id').value = p.id;
-    document.getElementById('new-pot-name').value = p.name;
-    document.getElementById('new-pot-price').value = p.price;
-    document.getElementById('new-pot-category').value = p.category;
-    
-    // Images array ni string ga marchi load chesthunnam
-    document.getElementById('new-pot-img').value = p.images ? p.images.join(', ') : p.img;
-    
-    // Smooth scroll to top of admin form
-    document.querySelector('#admin-page').scrollTo({ top: 0, behavior: 'smooth' });
-}
 
 // 15. UPDATE CHECKOUT UI: Billing summary and delivery details chupisthundhi
 function updateCheckoutUI() {
