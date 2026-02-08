@@ -65,17 +65,28 @@
     <div id="cart-items-full"></div>  
     <div id="cart-buy-now-container" style="padding:20px;"></div>  
 </section>  
-<section id="search-page" class="page" style="display:none;">
+<section id="search-page" class="page" style="display:none; padding:10px;">
+
   <div class="cart-header-full">
-    <button onclick="showPage('home')" class="back-btn">Back</button>
+    <button onclick="showPage('home')" class="back-btn">←</button>
     <h2>Search</h2>
   </div>
 
-  <input id="main-search-input" onkeyup="performSearch()" 
-         placeholder="Search pots..."
-         style="width:90%;margin:10px;border-radius:15px;">
+  <div style="padding:10px;">
+    <input id="main-search-input"
+       onkeyup="performSearch()"
+       placeholder="Search clay, diya..."
+       style="
+        width:100%;
+        padding:12px;
+        border-radius:20px;
+        border:1px solid #ccc;
+        font-size:15px;
+       ">
+  </div>
 
   <div id="search-results-list" class="grid-container"></div>
+
 </section>
 <section id="checkout-page" class="page" style="display:none;">  
 <div class="cart-header-full">  
