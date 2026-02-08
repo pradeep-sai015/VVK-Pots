@@ -147,7 +147,31 @@ function changeQty(id,d){
   updateCartUI();
   displayProducts(pots);
 }
-function updateCartUI() {
+
+// ===== 9. CHECKOUT =====
+function updateCheckoutUI() {
+
+  const box = document.getElementById('checkout-items');
+
+  const total = getTotal();
+
+  box.innerHTML = `
+    <div class="account-box">
+
+      <h3>Bill Summary</h3>
+
+      <div>Items Total: ₹${total}</div>
+      <div>Delivery: FREE</div>
+
+      <hr>
+
+      <b>Total Payable: ₹${total}</b>
+
+    </div>`;
+}
+
+// ===== 10. SAVE ADDRESS =====
+function saveAddressLfunction updateCartUI() {
 
   const list = document.getElementById('cart-items-full');
   const buyBox = document.getElementById('cart-buy-now-container');
@@ -159,43 +183,29 @@ function updateCartUI() {
   }
 
   list.innerHTML = cart.map(i => `
-    <div class="account-box">
-      <b>${i.name}</b> ₹${i.price} x ${i.quantity}
+    <div class="account-box cart-row">
 
-      <button onclick="changeQty(${i.id},-1)">-</button>
-      <button onclick="changeQty(${i.id},1)">+</button>
+      <img src="${i.img}" class="cart-img">
+
+      <div class="cart-info">
+        <b>${i.name}</b><br>
+        <span class="qty-text">Qty: ${i.quantity}</span>
+      </div>
+
+      <div class="cart-actions">
+        <button onclick="changeQty(${i.id},-1)">-</button>
+        <button onclick="changeQty(${i.id},1)">+</button>
+      </div>
+
     </div>
   `).join('');
 
-  const total = getTotal();
-
+  // cart lo buy now matrame
   buyBox.innerHTML = `
-    <div class="account-box">
-
-      <h3>Bill Summary</h3>
-
-      Items Total: ₹${total}<br>
-      Delivery: FREE<br>
-
-      <b>Total: ₹${total}</b>
-
-      <button class="checkout-btn"
-              onclick="showPage('checkout')">
-        Buy Now
-      </button>
-
-    </div>`;
-}
-// ===== 9. CHECKOUT =====
-function updateCheckoutUI(){
-  const total=cart.reduce((s,i)=>s+i.price*i.quantity,0);
-  document.getElementById('checkout-total-price').innerText="₹"+total;
-
-  updateCheckoutAddress();
-}
-
-// ===== 10. SAVE ADDRESS =====
-function saveAddressLocal(){
+    <button class="checkout-btn" onclick="showPage('checkout')">
+      Buy Now
+    </button>`;
+}ocal(){
   const data={
     type:document.getElementById('addr-type').value,
     house:document.getElementById('addr-house').value,
@@ -382,9 +392,19 @@ function closeFullImage(){
 }
 
 // ===== 23. GOOGLE =====
-function handleCredentialResponse(){
-  isLoggedIn=true;
-  localStorage.setItem('currentUser',"Google User");
+function handleCredentialResponse(response) {
+
+  const data = JSON.parse(
+    atob(response.credential.split('.')[1])
+  );
+
+  isLoggedIn = true;
+
+  localStorage.setItem('currentUser', data.name);
+
+  document.getElementById('user-name-display')
+    .innerText = data.name;
+
   updateAuthUI();
 }
 
@@ -404,10 +424,19 @@ function lockAdmin(){ showPage('account'); }
 function saveProduct(){ alert("Local mode"); }
 
 // ===== 27. SEARCH =====
-function performSearch(){
-  const q=document.getElementById('main-search-input').value.toLowerCase();
-  const r=pots.filter(p=>p.name.toLowerCase().includes(q));
-  displayProducts(r,'search-results-list');
+function performSearch() {
+
+  const q =
+    document.getElementById('main-search-input')
+      .value.toLowerCase().trim();
+
+  // search all products
+  const results = pots.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    p.category.toLowerCase().includes(q)
+  );
+
+  displayProducts(results, 'search-results-list');
 }
 
 // ===== 28. LOAD ADDRESS =====
