@@ -57,6 +57,30 @@ function displayProducts(data, containerId = 'product-list', limit = 50) {
     }).join('');
 }
 
+// Image Slider Logic
+let currentSlide = 0;
+const slides = [
+    "https://i.ibb.co/example1.jpg", 
+    "https://i.ibb.co/example2.jpg",
+    "https://i.ibb.co/example3.jpg"
+]; // Ikkada nee pots images links pettu ra
+
+function startSlider() {
+    const heroImg = document.querySelector('.hero-section img'); // Nee class name correct ga chudu
+    if(!heroImg || slides.length === 0) return;
+
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        heroImg.src = slides[currentSlide];
+    }, 3000); // 3 seconds ki change avthundhi
+}
+
+// Site load avvagane functions start cheyali
+window.addEventListener('DOMContentLoaded', () => {
+    startSlider();
+    loadSavedAddress(); // Patha logic
+}
+                       );
 
 
 function adminSearchProducts() {
@@ -314,14 +338,57 @@ function removeProductFromStore(id) {
 
 
 
-// 15. UPDATE CHECKOUT UI: Billing summary and delivery details chupisthundhi
-function updateCheckoutUI() {
-    const summary = document.getElementById('checkout-bill-summary');
-    if (!summary) return;
+// 1. Checkout Page Open ayinappudu Address chupinchali
+function updateCheckoutAddress() {
+    const saved = localStorage.getItem('userAddress');
+    const display = document.getElementById('display-address');
+    
+    if (saved) {
+        const addr = JSON.parse(saved);
+        display.innerHTML = `<b>📍 Delivering to ${addr.type}:</b><br>${addr.house}, ${addr.village}, ${addr.city} - ${addr.pin}`;
+    } else {
+        display.innerHTML = "⚠️ Address not saved go and save again !";
+    }
+}
 
-    let subtotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-    let delivery = 0; // Free delivery logic
-    let total = subtotal + delivery;
+// 2. WhatsApp Redirect Logic with Loader
+function checkoutWhatsApp() {
+    const savedAddress = localStorage.getItem('userAddress');
+    if (!savedAddress) {
+        alert("Arey, mundhu address save chey ra!");
+        showPage('address-manage-page');
+        return;
+    }
+
+    const addr = JSON.parse(savedAddress);
+    let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    if (cartItems.length === 0) {
+        alert("Cart empty ga undhi ra!");
+        return;
+    }
+
+    // Loading Animation Box chupisthunnam
+    const loader = document.getElementById('whatsapp-loader');
+    if(loader) loader.style.display = 'block';
+
+    let message = `*V V K POTS - NEW ORDER*%0A%0A`;
+    message += `*Address (${addr.type}):*%0A${addr.house}, ${addr.village}, ${addr.city} - ${addr.pin}%0A%0A`;
+    message += `*Items:*%0A`;
+
+    let total = 0;
+    cartItems.forEach(item => {
+        message += `- ${item.name} (Qty: ${item.quantity})%0A`;
+        total += item.price * item.quantity;
+    });
+
+    message += `%0A*Total: ₹${total}*`;
+
+    // 2 seconds tharvatha redirect
+    setTimeout(() => {
+        window.location.href = `https://wa.me/916301678881?text=${message}`;
+    }, 2000);
+}
 
     // Rounded design thoo billing box
     summary.innerHTML = `
@@ -546,47 +613,7 @@ function loadSavedAddress() {
     }
 }
 
-// 3. WhatsApp Redirect Function
-function checkoutWhatsApp() {
-    const savedAddress = localStorage.getItem('userAddress');
-    if (!savedAddress) {
-        alert("Arey, mundu address save chey ra!");
-        showPage('address-manage-page');
-        return;
-    }
 
-    const addr = JSON.parse(savedAddress);
-    let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    if (cartItems.length === 0) {
-        alert("Cart empty ga undi ra!");
-        return;
-    }
-
-    // Loading Box chupisthunnam
-    document.getElementById('whatsapp-loader').style.display = 'block';
-
-    let message = `*V V K POTS - NEW ORDER*%0A%0A`;
-    message += `*Customer Address:*%0A${addr.house}, ${addr.village}, ${addr.city} - ${addr.pin}%0A%0A`;
-    message += `*Items Ordered:*%0A`;
-
-    let total = 0;
-    cartItems.forEach(item => {
-        message += `- ${item.name} (Qty: ${item.quantity}) - ₹${item.price * item.quantity}%0A`;
-        total += item.price * item.quantity;
-    });
-
-    message += `%0A*Total Amount: ₹${total}*%0A%0A_Arey, ventane order confirm chey ra!_`;
-
-    // WhatsApp Number: +91 6301678881
-    const whatsappUrl = `https://wa.me/916301678881?text=${message}`;
-
-    // 2 seconds tharvatha redirect
-    setTimeout(() => {
-        window.location.href = whatsappUrl;
-        document.getElementById('whatsapp-loader').style.display = 'none';
-    }, 2000);
-}
 
 // --- 8. STARTUP LOGIC ---
 window.onload = () => {
