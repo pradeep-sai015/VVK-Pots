@@ -74,13 +74,28 @@
     </section>
 
     <section id="checkout-page" class="page" style="display:none;">
-        <div class="cart-header-full"><button onclick="showPage('cart')" class="back-btn">←</button><h2>Checkout</h2></div>
-        <div id="checkout-bill-summary"></div>
-        <div class="account-box" style="border-radius:25px;">
-            <textarea id="ship-address" class="login-input" style="height:100px;" placeholder="Full Address..."></textarea>
-            <button onclick="placeOrder()" class="checkout-btn" style="width:100%; border-radius:20px;">Confirm & WhatsApp</button>
+    <div class="cart-header-full">
+        <button onclick="showPage('cart')" class="back-btn">←</button>
+        <h2>Checkout</h2>
+    </div>
+    
+    <div id="checkout-items" class="cart-container"></div>
+
+    <div id="selected-address-info" class="account-box" style="margin: 15px; border-radius: 20px; background: #FFF9C4; padding: 15px; border: 1px dashed #FBC02D;">
+        <p id="display-address" style="color: #3E2723; font-size: 14px;"> Address loading...</p>
+    </div>
+
+    <div class="cart-total-section">
+        <div class="total-row">
+            <span>Total Amount:</span>
+            <span id="checkout-total-price">₹0</span>
         </div>
-    </section>
+        <button onclick="checkoutWhatsApp()" class="checkout-btn" style="width: 100%; border-radius: 15px; margin-top: 15px; background: #25D366;">
+            🚀 Buy Now via WhatsApp
+        </button>
+    </div>
+</section>
+
 
     <section id="account-page" class="page" style="display:none;">
         <div id="user-profile" style="display:none;">
