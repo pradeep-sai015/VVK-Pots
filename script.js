@@ -57,32 +57,7 @@ function displayProducts(data, containerId = 'product-list', limit = 50) {
     }).join('');
 }
 
-// --- 5. INVENTORY MANAGEMENT (No Home Redirect) ---
-function saveProduct() {
-    const idIn = document.getElementById('edit-pot-id').value;
-    const name = document.getElementById('new-pot-name').value;
-    const price = document.getElementById('new-pot-price').value;
-    const cat = document.getElementById('new-pot-category').value;
-    const imgStr = document.getElementById('new-pot-img').value;
 
-    if(!name || !price || !imgStr) return alert("All fields are mandatory !");
-
-    const id = idIn ? Number(idIn) : Date.now();
-    const images = imgStr.split(',').map(s => s.trim());
-    const productData = { id, name, price: Number(price), category: cat, img: images[0], images, stock: true };
-
-    database.ref('pots/' + id).set(productData).then(() => {
-        alert("Product Saved to Firebase!");
-        // Clear inputs after save
-        document.getElementById('edit-pot-id').value = "";
-        document.getElementById('new-pot-name').value = "";
-        document.getElementById('new-pot-price').value = "";
-        document.getElementById('new-pot-category').value = "";
-        document.getElementById('new-pot-img').value = "";
-        // Refresh inventory list only, stay on admin page
-        adminSearchProducts();
-    });
-}
 
 function adminSearchProducts() {
     const list = document.getElementById('admin-remove-list');
@@ -100,18 +75,6 @@ function adminSearchProducts() {
         </div>`).join('');
 }
 
-// --- 6. ADDRESS & WHATSAPP REDIRECT ---
-function saveAddress() {
-    const type = document.getElementById('addr-type').value;
-    const house = document.getElementById('addr-house').value;
-    const village = document.getElementById('addr-village').value;
-    const city = document.getElementById('addr-city').value;
-    const pin = document.getElementById('addr-pin').value;
-    if(!house || !city || !pin) return alert("Fill mandatory address details ra!");
-    addresses[type] = { house, village, city, pin };
-    saveToStorage();
-    alert("Address Saved Successfully!");
-}
 
 function placeOrder() {
     const addr = document.getElementById('ship-address').value;
@@ -526,28 +489,7 @@ function syncProductToAllDevices(id, productData) {
         .catch(err => alert("Sync Error: " + err.message));
 }
 
-// 25. PLACE ORDER (WHATSAPP FIX): Checkout nundi WhatsApp ki neat message pampisthundhi
-function placeOrder() {
-    const addr = document.getElementById('ship-address').value;
-    if(!addr.trim()) return alert("Address kachithanga kottu ra!");
 
-    document.getElementById('whatsapp-modal').style.display = 'flex';
-
-    let orderItems = cart.map(i => `• ${i.name} (Qty: ${i.quantity}) - ₹${i.price * i.quantity}`).join('%0A');
-    let totalBill = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-    
-    let message = `*NEW ORDER - V K K POTS*%0A%0A` +
-                  `*Items:*%0A${orderItems}%0A%0A` +
-                  `*Total:* ₹${totalBill}%0A%0A` +
-                  `*Address:*%0A${addr.trim()}%0A%0A` +
-                  `_Please confirm order!_`;
-
-    setTimeout(() => {
-        window.location.href = `https://wa.me/916301678881?text=${message}`;
-        cart = [];
-        saveToStorage();
-    }, 1500);
-}
 
 function toggleWishlist(id) {
     const idx = wishlist.findIndex(w => w.id === id);
@@ -569,6 +511,81 @@ function updateWishlistUI() {
                 <button onclick="toggleWishlist(${p.id})" style="color:red; border:none; background:none;">Remove ❤️</button>
             </div>
         </div>`).join('');
+}
+// 1. Address Save to Local Storage
+function saveAddressLocal() {
+    const addressData = {
+        type: document.getElementById('addr-type').value,
+        house: document.getElementById('addr-house').value,
+        village: document.getElementById('addr-village').value,
+        city: document.getElementById('addr-city').value,
+        pin: document.getElementById('addr-pin').value
+    };
+
+    if (!addressData.house || !addressData.city) {
+        alert("Arey, address details motham fill chey ra!");
+        return;
+    }
+
+    // JSON format lo local storage lo save chesthunnam
+    localStorage.setItem('userAddress', JSON.stringify(addressData));
+    alert("Address Local Storage lo save ayindi ra! ✅");
+    showPage('account');
+}
+
+// 2. Load Saved Address (Account page open ayinappudu idi call chey)
+function loadSavedAddress() {
+    const saved = localStorage.getItem('userAddress');
+    if (saved) {
+        const data = JSON.parse(saved);
+        // Saved data ni inputs lo fill chesthunnam
+        document.getElementById('addr-house').value = data.house;
+        document.getElementById('addr-village').value = data.village;
+        document.getElementById('addr-city').value = data.city;
+        document.getElementById('addr-pin').value = data.pin;
+    }
+}
+
+// 3. WhatsApp Redirect Function
+function checkoutWhatsApp() {
+    const savedAddress = localStorage.getItem('userAddress');
+    if (!savedAddress) {
+        alert("Arey, mundu address save chey ra!");
+        showPage('address-manage-page');
+        return;
+    }
+
+    const addr = JSON.parse(savedAddress);
+    let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    if (cartItems.length === 0) {
+        alert("Cart empty ga undi ra!");
+        return;
+    }
+
+    // Loading Box chupisthunnam
+    document.getElementById('whatsapp-loader').style.display = 'block';
+
+    let message = `*V V K POTS - NEW ORDER*%0A%0A`;
+    message += `*Customer Address:*%0A${addr.house}, ${addr.village}, ${addr.city} - ${addr.pin}%0A%0A`;
+    message += `*Items Ordered:*%0A`;
+
+    let total = 0;
+    cartItems.forEach(item => {
+        message += `- ${item.name} (Qty: ${item.quantity}) - ₹${item.price * item.quantity}%0A`;
+        total += item.price * item.quantity;
+    });
+
+    message += `%0A*Total Amount: ₹${total}*%0A%0A_Arey, ventane order confirm chey ra!_`;
+
+    // WhatsApp Number: +91 6301678881
+    const whatsappUrl = `https://wa.me/916301678881?text=${message}`;
+
+    // 2 seconds tharvatha redirect
+    setTimeout(() => {
+        window.location.href = whatsappUrl;
+        document.getElementById('whatsapp-loader').style.display = 'none';
+    }, 2000);
 }
 
 // --- 8. STARTUP LOGIC ---
