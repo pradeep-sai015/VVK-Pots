@@ -147,31 +147,8 @@ function changeQty(id,d){
   updateCartUI();
   displayProducts(pots);
 }
-
-// ===== 9. CHECKOUT =====
-function updateCheckoutUI() {
-
-  const box = document.getElementById('checkout-items');
-
-  const total = getTotal();
-
-  box.innerHTML = `
-    <div class="account-box">
-
-      <h3>Bill Summary</h3>
-
-      <div>Items Total: ₹${total}</div>
-      <div>Delivery: FREE</div>
-
-      <hr>
-
-      <b>Total Payable: ₹${total}</b>
-
-    </div>`;
-}
-
-// ===== 10. SAVE ADDRESS =====
-function saveAddressLfunction updateCartUI() {
+// ===== 8. CART UI =====
+function updateCartUI() {
 
   const list = document.getElementById('cart-items-full');
   const buyBox = document.getElementById('cart-buy-now-container');
@@ -200,24 +177,48 @@ function saveAddressLfunction updateCartUI() {
     </div>
   `).join('');
 
-  // cart lo buy now matrame
   buyBox.innerHTML = `
     <button class="checkout-btn" onclick="showPage('checkout')">
       Buy Now
     </button>`;
-}ocal(){
-  const data={
-    type:document.getElementById('addr-type').value,
-    house:document.getElementById('addr-house').value,
-    village:document.getElementById('addr-village').value,
-    city:document.getElementById('addr-city').value,
-    pin:document.getElementById('addr-pin').value
-  };
+}
+// ===== 9. CHECKOUT =====
+function updateCheckoutUI() {
 
-  localStorage.setItem('userAddress',JSON.stringify(data));
-  alert("Saved ra");
+  const box = document.getElementById('checkout-items');
+
+  const total = getTotal();
+
+  box.innerHTML = `
+    <div class="account-box">
+
+      <h3>Bill Summary</h3>
+
+      <div>Items Total: ₹${total}</div>
+      <div>Delivery: FREE</div>
+
+      <hr>
+
+      <b>Total Payable: ₹${total}</b>
+
+    </div>`;
 }
 
+// ===== 10. SAVE ADDRESS =====
+function saveAddressLocal() {
+
+  const data = {
+    type: document.getElementById('addr-type').value,
+    house: document.getElementById('addr-house').value,
+    village: document.getElementById('addr-village').value,
+    city: document.getElementById('addr-city').value,
+    pin: document.getElementById('addr-pin').value
+  };
+
+  localStorage.setItem('userAddress', JSON.stringify(data));
+
+  alert("Saved ra");
+}
 // ===== 11. LOAD ADDRESS =====
 function updateCheckoutAddress(){
   const a=JSON.parse(localStorage.getItem('userAddress'));
@@ -228,7 +229,21 @@ function updateCheckoutAddress(){
     return;
   }
 
-  d.innerText=`${a.house}, ${a.village}, ${a.city} - ${a.pin}`;
+  d.innerText=`${a.house}, ${a.village},// ===== 10. SAVE ADDRESS =====
+function saveAddressLocal() {
+
+  const data = {
+    type: document.getElementById('addr-type').value,
+    house: document.getElementById('addr-house').value,
+    village: document.getElementById('addr-village').value,
+    city: document.getElementById('addr-city').value,
+    pin: document.getElementById('addr-pin').value
+  };
+
+  localStorage.setItem('userAddress', JSON.stringify(data));
+
+  alert("Saved ra");
+} ${a.city} - ${a.pin}`;
 }
 
 // ===== 12. WHATSAPP =====
