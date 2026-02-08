@@ -130,22 +130,41 @@ function openProductDetail(id) {
   document.getElementById('detail-buy-btn-area').innerHTML=`
     <button onclick="showPage('checkout')">Buy Now</button>`;
 }
+function changeQty(id, d) {
 
-// ===== 7. CART LOGIC =====
-function changeQty(id,d){
-  const i=cart.findIndex(c=>c.id===id);
+  const index = cart.findIndex(c => c.id === id);
 
-  if(i>-1){
-    cart[i].quantity+=d;
-    if(cart[i].quantity<1) cart.splice(i,1);
-  }else if(d>0){
-    const p=pots.find(x=>x.id===id);
-    cart.push({...p,quantity:1});
+  if (index > -1) {
+    cart[index].quantity += d;
+
+    if (cart[index].quantity < 1) {
+      cart.splice(index, 1);
+    }
+
+  } else if (d > 0) {
+    const p = pots.find(x => x.id === id);
+    cart.push({ ...p, quantity: 1 });
   }
 
   saveToStorage();
+
+  // --- IMPORTANT REFRESH LOGIC ---
   updateCartUI();
-  displayProducts(pots);
+  displayProducts(pots);        // home refresh
+  updateDetailQty(id);          // detail page refresh
+}
+function updateDetailQty(id) {
+
+  const qty = (cart.find(c => c.id === id) || {}).quantity || 0;
+
+  const area = document.getElementById('detail-qty-area');
+  if (!area) return;
+
+  area.innerHTML = `
+    <button onclick="changeQty(${id},-1)">-</button>
+    <b>${qty}</b>
+    <button onclick="changeQty(${id},1)">+</button>
+  `;
 }
 // ===== 8. CART UI =====
 function updateCartUI() {
