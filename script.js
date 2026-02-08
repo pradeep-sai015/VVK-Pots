@@ -615,10 +615,4 @@ function loadSavedAddress() {
 
 
 
-// --- 8. STARTUP LOGIC ---
-window.onload = () => {
-    loadPotsFromDB();
-    updateAuthUI();
-    showPage('home');
-};
-  
+
