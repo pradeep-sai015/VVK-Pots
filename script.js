@@ -58,7 +58,7 @@ function displayProducts(data, containerId = 'product-list', limit = 50) {
             <div style="position:relative;">
                 <img src="${p.img}" onclick="openProductDetail(${p.id})" style="width:100%; height:180px; object-fit:cover;">
                 <span onclick="event.stopPropagation(); toggleWishlist(${p.id})" 
-                      style="position:absolute; top:10px; right:10px; font-size:1.5rem; cursor:pointer;">
+                      style="position:absolute; top:10px; right:10px; font-size:1.1rem; cursor:pointer;">
                     ${isWished ? '❤️' : '🤍'}
                 </span>
             </div>
@@ -79,7 +79,7 @@ function saveProduct() {
     const cat = document.getElementById('new-pot-category').value;
     const imgStr = document.getElementById('new-pot-img').value;
 
-    if(!name || !price || !imgStr) return alert("All fields are mandatory ra!");
+    if(!name || !price || !imgStr) return alert("All fields are mandatory !");
 
     const id = idIn ? Number(idIn) : Date.now();
     const images = imgStr.split(',').map(s => s.trim());
@@ -444,7 +444,7 @@ function performSearch() {
     displayProducts(results, 'search-results-list', 50);
 }
 
-// 18. HANDLE CREDENTIAL RESPONSE: Google login success ayyaka user profile ni set chesthundhi
+// 18. HANDLE CREDENTIAL RESPONSE: Google login success ayyaka user  profile ni set chesthundhi
 function handleCredentialResponse(response) {
     try {
         const user = parseJwt(response.credential);
@@ -478,21 +478,44 @@ function updateShipAddressArea() {
 }
 
 // 20. UPDATE ADDRESS SUMMARIES: Account page lo saved addresses ni refresh chesthundhi
-function updateAddressSummaries() {
-    // Ee logic valla account page lo addresses dynamic ga update avthayi
-    const types = { 1: "Home", 2: "Office" };
-    for (let t in types) {
-        const addrBox = document.getElementById(`summary-addr-${t}`);
-        if (addrBox) {
-            if (addresses[t]) {
-                const a = addresses[t];
-                addrBox.innerText = `${types[t]}: ${a.house}, ${a.city}`;
-            } else {
-                addrBox.innerText = `${types[t]}: Not Saved`;
-            }
-        }
+function saveAddress() {
+    // HTML nundi values collect chesthunnam
+    const type = document.getElementById('addr-type').value; // Home or Office
+    const house = document.getElementById('addr-house').value;
+    const village = document.getElementById('addr-village').value;
+    const city = document.getElementById('addr-city').value;
+    const pin = document.getElementById('addr-pin').value;
+
+    // Validate if all fields are filled
+    if (!house || !city || !pin) {
+        alert("Please fill all the details ra!");
+        return;
+    }
+
+    // User login ayyi unte valla ID ki save chesthunnam
+    if (currentUser) {
+        const addrData = {
+            type: type,
+            house: house,
+            village: village,
+            city: city,
+            pincode: pin
+        };
+
+        // Firebase loki push chesthunnam
+        firebase.database().ref('users/' + currentUser.uid + '/address/' + type).set(addrData)
+            .then(() => {
+                alert(type + " Address saved successfully ra!");
+                showPage('account');
+            })
+            .catch((error) => {
+                console.error("Error saving address: ", error);
+            });
+    } else {
+        alert("Please Login first ra!");
     }
 }
+
 // 21. FILTER CATEGORY: Home page and Menu bar nundi categories filter chesthundhi
 function filterCategory(c) {
     // 1. Home page ki switch chesthunnam ra
